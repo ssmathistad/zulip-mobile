@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - create-branch-cleanup-workflow
-  schedule:
-    - cron: ' */5 * * *'
+      - main
+  # schedule:
+  #   - cron: ' */5 * * *'
 
 jobs:
   cleanup:
