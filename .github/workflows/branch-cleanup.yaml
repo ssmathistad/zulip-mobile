@@ -1,12 +1,6 @@
 name: Branch Cleanup
 
-on:
-  push:
-    branches:
-      - create-branch-cleanup-workflow
-      - main
-  # schedule:
-  #   - cron: ' */5 * * *'
+on: push
 
 jobs:
   cleanup:
