@@ -1,0 +1,34 @@
+name: Branch Cleanup
+
+on:
+  schedule:
+    - cron: '15 * * * *'
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Delete stale branches
+        run: |
+          git fetch --prune
+          timestamp=$(date -d '1 month ago' +%s)
+          # Iterate over branches
+          for branch in $(git for-each-ref --format='%(refname:short) %(committerdate:raw)' refs/heads/); do
+            branch_name=$(echo $branch | awk '{print $1}')
+            commit_date=$(echo $branch | awk '{print $2}')
+            commit_timestamp=$(date -d "$commit_date" +%s)
+            # Skip main branch
+            if [ $branch_name = "main" ]; then
+              continue
+            fi
+            # Compare with one month ago
+            if [ $commit_timestamp -lt $timestamp ]; then
+              # Delete branch if merged
+              if git merge-base --is-ancestor $branch_name main; then
+                git branch -d $branch_name
+              fi
+            fi
+          done
